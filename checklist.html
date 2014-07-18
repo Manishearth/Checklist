@@ -101,7 +101,7 @@
 		//this is the real meat-and-potatoes of the program, and also the part that's written most sloppily
 		//in a real program you'll want to change only relevant parts of the list, not rewrite the entire page,
 		//but it's easy to implement and much faster for such a small list
-		document.body.innerHTML = ""; //clear the page
+		document.getElementById('content').innerHTML = ""; //clear the page
 		var toWrite="";
 		toWrite+=("<center><div class=\"col-lg-20 \"><h1>Freshman Bucketlist<hr></h1></center></div><br>");
 		toWrite+=("<div class=\"container\"><div class=\"row\"><div class=\"col-md-24\"><p>Below you\'ll find some of your stud seniors\' opinions on what should definitely<br> be on your list as you explore the campus and begin your journey here.<br> It is by no means exhaustive, so keep modifying and adding more!</p><hr></div></div>");
@@ -130,7 +130,7 @@
 		toWrite+=("<input id=\"restore\" type=\"button\" onclick=\"restoreDefaults()\" value=\"Okay\">");
 		toWrite+=("<hr><small>To all the budding hackers amongst you, try viewing the page source<br> to get an idea of how this was implemented; <br>look for lines starting with //, they\'ll act as a rough explanation.<br> To View Source:<br> If you are using Chrome or Firefox, press Ctrl+U.<br><strong>If you are using Internet Explorer, well... you\'re already beyond help :(</strong></small>");
 		toWrite+=("<div class=\"col-md-12 \"><hr><center>Developed by <b>Shantanu Thakoor </b>and<b> Abhijit Tomar</b></center><hr>");
-		document.body.innerHTML = toWrite;
+		document.getElementById('content').innerHTML = toWrite;
 		//finally, write all of what we stored in toWrite to the current browser page
 	}
 	
@@ -147,7 +147,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
-    
-    
+   <div id=content>
+   </div>
+ <a href="https://github.com/ShantanuThakoor/Checklist"><img style="position: absolute; top: 0; right: 0; border: 0;" src="forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
 </body>
 </html>-
