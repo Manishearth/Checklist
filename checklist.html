@@ -1,0 +1,153 @@
+<!DOCTYPE html>	
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image" content="http://www.cse.iitb.ac.in/~ranveer/roommate-finder/img/sign.jpg" />
+    <meta property="og:description" content="Greetings new IITBian! Hope you are just as excited to be coming into IITB as we are to welcome you here! But have you met your wingmates yet? No? Find them using the IITB Room-mate Finder!" />
+	<title>IITB Bucket List!</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<script>
+	//this is the default list that's displayed if you haven't been to the site before
+	var defaultList = ["Watch the sun rise over Sameer Hill (5 points)", 
+			"Night out in the city with your friends (10 points)",
+			"Attend (and fall asleep in) all lectures (20 points)", 
+			"Buy a WnCC T-shirt (50 points)",
+			"Shower daily (100 points)",
+			"Get all grades from FR to AP at least once over the course of your first year<br> (We\'re kidding. Negative points for this)"
+			
+			
+			];
+	var list = defaultList;
+	function populateList(){
+		//the list is assigned to default if you haven't been here before, and your custom list of you have
+		//it reads from your localStorage and reads it appropriately in the form of a list
+		var tempList = JSON.parse(localStorage.getItem('iitbList'));
+		if(!tempList){
+			list = defaultList.map(function(x){return x+"x";});
+		}
+		else {
+			list = tempList;
+		}
+		
+	}
+	function writeList(l){
+		//a handy way to save the current list on your local machine
+		//google JSON format to know more!
+		var j=JSON.stringify(l);
+		localStorage.setItem('iitbList', j);
+		
+	}
+	function restoreDefaults(){
+		list=defaultList.map(function(x){return x+"x";});
+		refresh(list);
+	}
+	function refresh(l){
+		//a VERY sloppy way to reflect changes on the page due to button presses
+		//seriously, don't ever do this :P
+		writeList(l);
+		populateList();
+		show();
+
+	}
+	//this line basically tells the browser what to do, the moment that the initial page has finished loading
+	window.onload = function(){
+		populateList();
+		show();
+	};
+	function change(i){
+		//this part of the code deals with the strikethroughs in the list
+		//as a quick-and-dirty hack, the list item ends with 'x' if incomplete, 'X' if complete, and '0' if deleted
+		//don't do this at home either :P
+		var temp = list[i];
+		var last = temp[temp.length-1];
+		var end="";
+		if(last == "X") end="x";
+		else end="X";
+		list[i]=temp.slice(0,-1)+end;
+		
+		refresh(list);
+		
+	}
+	function removeIITB(i){
+		// similar to change(i)
+		// you'll notice we just set the last letter to 0 so that it won't be shown;
+		// however it's not explicitly deleted. it will still take up space on your localstorage
+		// this is, of course, inefficient
+		var temp = list[i];
+		var end="0";
+		list[i]=temp.slice(0,-1)+end;	
+		refresh(list);
+	
+	}
+	function add(){
+		//this part adds the value you typed in the textfield to the list
+		list.push(document.getElementById("addText").value+"x");
+		refresh(list);
+	
+	}
+	function show(){
+		//this is the real meat-and-potatoes of the program, and also the part that's written most sloppily
+		//in a real program you'll want to change only relevant parts of the list, not rewrite the entire page,
+		//but it's easy to implement and much faster for such a small list
+		document.body.innerHTML = ""; //clear the page
+		var toWrite="";
+		toWrite+=("<center><div class=\"col-lg-20 \"><h1>Freshman Bucketlist<hr></h1></center></div><br>");
+		toWrite+=("<div class=\"container\"><div class=\"row\"><div class=\"col-md-24\"><p>Below you\'ll find some of your stud seniors\' opinions on what should definitely<br> be on your list as you explore the campus and begin your journey here.<br> It is by no means exhaustive, so keep modifying and adding more!</p><hr></div></div>");
+		toWrite+=("<ul id=\"ulist\">");//start the list
+		for(var i=0; i<list.length; i++){
+			var item = list[i];
+			if(!item) continue;
+			if(item[item.length-1]=='0') continue;
+			var done = item[item.length - 1] == 'X';
+			toWrite+=("<li>");
+			if(done) {
+				toWrite+=("<del>"); //set strikethrough
+			}
+			toWrite+=(item.slice(0,-1));
+			if(done) {
+				toWrite+=("</del>");
+			}
+			toWrite+=("&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\""+i+"\" " + (done?"checked":"") + " value=\"\" onclick=change(\""+i+"\")>");		//add the strikethrough checkbox
+			toWrite+=("&nbsp;&nbsp;&nbsp;<input class=\"btn btn-primary btn-sm\" type=\"button\" onclick=\"removeIITB("+i+")\" value=\"Delete\">"); //add the delete button
+			toWrite+=("</li><br>"); 
+		}
+		toWrite+=("</ul>");
+		toWrite+=("<label for=\"add\">Don\'t hesitate to add your own too!</label> <input type=text id=\"addText\" placeholder=\"New goal\">");
+		toWrite+=("&nbsp;<input class=\"btn btn-primary btn-sm\" type=\"button\" onclick=\"add()\" value=\"Add\"><br><br>");
+		toWrite+=("<label for=\"restore\">Restore default goals?</label>");
+		toWrite+=("<input id=\"restore\" type=\"button\" onclick=\"restoreDefaults()\" value=\"Okay\">");
+		toWrite+=("<hr><small>To all the budding hackers amongst you, try viewing the page source<br> to get an idea of how this was implemented; <br>look for lines starting with //, they\'ll act as a rough explanation.<br> To View Source:<br> If you are using Chrome or Firefox, press Ctrl+U.<br><strong>If you are using Internet Explorer, well... you\'re already beyond help :(</strong></small>");
+		toWrite+=("<div class=\"col-md-12 \"><hr><center>Developed by <b>Shantanu Thakoor </b>and<b> Abhijit Tomar</b></center><hr>");
+		document.body.innerHTML = toWrite;
+		//finally, write all of what we stored in toWrite to the current browser page
+	}
+	
+	//througout the code you'll see examples of what I said were "bad" or "inefficient" functions
+	//try getting a bit familiar with them, testing and trying things 
+	//on your own, and you could easily improve them as a leaning experience!
+	// Happy Hacking, Kids! :D
+	
+	//Brought to you by Shantanu Thakoor(development) and Abhijit Tomar(designing).	
+</script>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    
+    
+</body>
+</html>-
